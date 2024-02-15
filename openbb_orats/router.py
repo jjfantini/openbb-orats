@@ -41,11 +41,11 @@ async def post_example(
 
 # pylint: disable=unused-argument
 @router.command(model="Tickers")
-async def model_example(
+async def tickers(
     cc: CommandContext,
     provider_choices: ProviderChoices,
     standard_params: StandardParams,
     extra_params: ExtraParams,
 ) -> OBBject[BaseModel]:
-    """Example Data."""
+    """Retrieve Ticker Information from ORATS"""
     return await OBBject.from_query(Query(**locals()))

@@ -6,7 +6,7 @@ from openbb_orats.models.tickers import OratsTickersOptionsChainsFetcher
 
 # mypy: disable-error-code="list-item"
 
-orats_provider = Provider(
+provider = Provider(
     name="ORATS",
     description="Data provider for ORATS.",
     # Only add 'credentials' if they are needed.
