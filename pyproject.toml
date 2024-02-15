@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "openbb-orats"
+version = "1.0.0"
+description = ""
+authors = ["Jennings Fantini <jennings@humblfinance.io>"]
+readme = "README.md"
+packages = [{ include = "openbb_orats" }]
+
+[tool.poetry.dependencies]
+python = ">=3.8.1,<3.12"
+openbb-core = { version = "^1.1.0" }
+openbb-devtools = { version = "^1.0.0b1" }
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.plugins."openbb_core_extension"]
+openbb_orats = "openbb_orats.router:router"
+
+[tool.poetry.plugins."openbb_provider_extension"]
+openbb_orats = "openbb_orats.provider:provider"
