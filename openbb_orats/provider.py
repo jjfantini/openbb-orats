@@ -2,7 +2,7 @@
 
 from openbb_core.provider.abstract.provider import Provider
 
-from openbb_orats.models.tickers import OratsTickersFetcher
+from openbb_orats.models.tickers import OratsTickersOptionsChainsFetcher
 
 # mypy: disable-error-code="list-item"
 
@@ -16,6 +16,6 @@ orats_provider = Provider(
     # Here, we list out the fetchers showing what our provider can get.
     # The dictionary key is the fetcher's name, used in the `router.py`.
     fetcher_dict={
-        "Tickers": OratsTickersFetcher,
+        "Tickers": OratsTickersOptionsChainsFetcher,
     },
 )

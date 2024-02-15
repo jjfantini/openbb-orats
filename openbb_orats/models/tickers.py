@@ -21,11 +21,11 @@ from typing import Any, Dict, List, Optional
 import requests
 from openbb_core.provider.abstract.data import Data
 from openbb_core.provider.abstract.fetcher import Fetcher
-from openbb_core.provider.standard_models import OptionChainsQueryParams
+from openbb_core.provider.standard_models.options_chains import OptionsChainsQueryParams
 from pydantic import Field
 
 
-class OratsTickersQueryParams(OptionChainsQueryParams):
+class OratsTickersOptionsChainsQueryParams(OptionsChainsQueryParams):
     """ORATS Tickers Query Parameters.
 
     The QueryParams used in the `/datav2/tickers` endpoint for ORATS.
@@ -33,7 +33,7 @@ class OratsTickersQueryParams(OptionChainsQueryParams):
     """
 
 
-class OratsTickersData(Data):
+class OratsTickersOptionsChainsData(Data):
     """Sample provider data.
 
     The fields are displayed as-is in the output of the command. In this case, its the
@@ -45,10 +45,10 @@ class OratsTickersData(Data):
     max: str = Field(description="Maximum date in YYYY-MM-DD format.")
 
 
-class OratsTickersFetcher(
+class OratsTickersOptionsChainsFetcher(
     Fetcher[
-        OratsTickersQueryParams,
-        List[OratsTickersData],
+        OratsTickersOptionsChainsQueryParams,
+        List[OratsTickersOptionsChainsData],
     ]
 ):
     """Example Fetcher class.
@@ -57,17 +57,17 @@ class OratsTickersFetcher(
     """
 
     @staticmethod
-    def transform_query(params: Dict[str, Any]) -> OratsTickersQueryParams:
+    def transform_query(params: Dict[str, Any]) -> OratsTickersOptionsChainsQueryParams:
         """Define example transform_query.
 
         Here we can pre-process the query parameters and add any extra parameters that
         will be used inside the extract_data method.
         """
-        return OratsTickersQueryParams(**params)
+        return OratsTickersOptionsChainsQueryParams(**params)
 
     @staticmethod
     def extract_data(
-        query: OratsTickersQueryParams,
+        query: OratsTickersOptionsChainsQueryParams,
         credentials: Optional[Dict[str, str]],
         **kwargs: Any,
     ) -> List[dict]:
@@ -90,11 +90,11 @@ class OratsTickersFetcher(
 
     @staticmethod
     def transform_data(
-        query: OratsTickersQueryParams, data: List[dict], **kwargs: Any
-    ) -> List[OratsTickersData]:
+        query: OratsTickersOptionsChainsQueryParams, data: List[dict], **kwargs: Any
+    ) -> List[OratsTickersOptionsChainsData]:
         """Define example transform_data.
 
         Right now, we're converting the data to fit our desired format.
         You can apply other transformations to it here.
         """
-        return [OratsTickersData(**d) for d in data]
+        return [OratsTickersOptionsChainsData(**d) for d in data]
