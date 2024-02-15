@@ -18,42 +18,37 @@ This file shows an example of how to integrate data from a provider.
 # pylint: disable=unused-argument
 from typing import Any, Dict, List, Optional
 
+import requests
 from openbb_core.provider.abstract.data import Data
 from openbb_core.provider.abstract.fetcher import Fetcher
-from openbb_core.provider.abstract.query_params import QueryParams
+from openbb_core.provider.standard_models import OptionChainsQueryParams
 from pydantic import Field
 
 
-class ExampleQueryParams(QueryParams):
-    """Example provider query.
+class OratsTickersQueryParams(OptionChainsQueryParams):
+    """ORATS Tickers Query Parameters.
 
-    This is the definition of our query parameters that are specific to this provider.
-    We use this class to create our own parameters that will provided as input to the
-    command.
+    The QueryParams used in the `/datav2/tickers` endpoint for ORATS.
+    We are only interested in the `ticker` QueryParam.
     """
 
-    symbol: str = Field(description="Symbol to query.")
 
-
-class ExampleData(Data):
+class OratsTickersData(Data):
     """Sample provider data.
 
     The fields are displayed as-is in the output of the command. In this case, its the
     Open, High, Low, Close and Volume data.
     """
 
-    o: float = Field(description="Open price.")
-    h: float = Field(description="High price.")
-    l: float = Field(description="Low price.")
-    c: float = Field(description="Close price.")
-    v: float = Field(description="Volume.")
-    d: str = Field(description="Date")
+    ticker: str = Field(description="Ticker symbol.")
+    min: str = Field(description="Minimum date in YYYY-MM-DD format.")
+    max: str = Field(description="Maximum date in YYYY-MM-DD format.")
 
 
-class ExampleFetcher(
+class OratsTickersFetcher(
     Fetcher[
-        ExampleQueryParams,
-        List[ExampleData],
+        OratsTickersQueryParams,
+        List[OratsTickersData],
     ]
 ):
     """Example Fetcher class.
@@ -62,17 +57,17 @@ class ExampleFetcher(
     """
 
     @staticmethod
-    def transform_query(params: Dict[str, Any]) -> ExampleQueryParams:
+    def transform_query(params: Dict[str, Any]) -> OratsTickersQueryParams:
         """Define example transform_query.
 
         Here we can pre-process the query parameters and add any extra parameters that
         will be used inside the extract_data method.
         """
-        return ExampleQueryParams(**params)
+        return OratsTickersQueryParams(**params)
 
     @staticmethod
     def extract_data(
-        query: ExampleQueryParams,
+        query: OratsTickersQueryParams,
         credentials: Optional[Dict[str, str]],
         **kwargs: Any,
     ) -> List[dict]:
@@ -81,41 +76,25 @@ class ExampleFetcher(
         Here we make the actual request to the data provider and receive the raw data.
         If you said your Provider class needs credentials you can get them here.
         """
-        api_key = (
-            credentials.get("openbb_orats_api_key")
-            if credentials
-            else ""
-        )
+        api_key = credentials.get("openbb_orats_api_key") if credentials else ""
 
-        # Here we mock an example_response for brevity.
-        example_response = [
-            {
-                "o": 2,
-                "h": 5,
-                "l": 1,
-                "c": 4,
-                "v": 5,
-                "d": "August 23, 2023",
-            },
-            {
-                "o": 4,
-                "h": 7,
-                "l": 3,
-                "c": 6,
-                "v": 10,
-                "d": "August 24, 2023",
-            },
-        ]
+        ORATS_BASE_URL: str = "https://api.orats.io/datav2/"
 
-        return example_response
+        urls: str = ORATS_BASE_URL
+        urls += "ticker"
+        urls += f"?token={api_key}&ticker={query.symbol}"
+
+        res = requests.get(urls, timeout=10)
+
+        return res
 
     @staticmethod
     def transform_data(
-        query: ExampleQueryParams, data: List[dict], **kwargs: Any
-    ) -> List[ExampleData]:
+        query: OratsTickersQueryParams, data: List[dict], **kwargs: Any
+    ) -> List[OratsTickersData]:
         """Define example transform_data.
 
         Right now, we're converting the data to fit our desired format.
         You can apply other transformations to it here.
         """
-        return [ExampleData(**d) for d in data]
+        return [OratsTickersData(**d) for d in data]

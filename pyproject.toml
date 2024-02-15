@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "openbb-orats"
 version = "1.0.0"
-description = ""
+description = "Connecting OpenBB to ORATS Option Data Source"
 authors = ["Jennings Fantini <jennings@humblfinance.io>"]
 readme = "README.md"
 packages = [{ include = "openbb_orats" }]

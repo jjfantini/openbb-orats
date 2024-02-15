@@ -3,8 +3,11 @@
 import requests
 from openbb_core.app.model.command_context import CommandContext
 from openbb_core.app.model.obbject import OBBject
-from openbb_core.app.provider_interface import (ExtraParams, ProviderChoices,
-                                                StandardParams)
+from openbb_core.app.provider_interface import (
+    ExtraParams,
+    ProviderChoices,
+    StandardParams,
+)
 from openbb_core.app.query import Query
 from openbb_core.app.router import Router
 from pydantic import BaseModel
@@ -37,7 +40,7 @@ async def post_example(
 
 
 # pylint: disable=unused-argument
-@router.command(model="Example")
+@router.command(model="Tickers")
 async def model_example(
     cc: CommandContext,
     provider_choices: ProviderChoices,

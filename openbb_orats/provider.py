@@ -1,11 +1,12 @@
 """openbb_orats OpenBB Platform Provider."""
 
 from openbb_core.provider.abstract.provider import Provider
-from openbb_orats.models.example import ExampleFetcher
+
+from openbb_orats.models.tickers import OratsTickersFetcher
 
 # mypy: disable-error-code="list-item"
 
-provider = Provider(
+orats_provider = Provider(
     name="ORATS",
     description="Data provider for ORATS.",
     # Only add 'credentials' if they are needed.
@@ -15,6 +16,6 @@ provider = Provider(
     # Here, we list out the fetchers showing what our provider can get.
     # The dictionary key is the fetcher's name, used in the `router.py`.
     fetcher_dict={
-        "Example": ExampleFetcher,
-    }
+        "Tickers": OratsTickersFetcher,
+    },
 )
