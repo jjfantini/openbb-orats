@@ -81,12 +81,17 @@ class OratsTickersOptionsChainsFetcher(
         ORATS_BASE_URL: str = "https://api.orats.io/datav2/"
 
         urls: str = ORATS_BASE_URL
-        urls += "ticker"
+        urls += "tickers"
         urls += f"?token={api_key}&ticker={query.symbol}"
 
         res = requests.get(urls, timeout=10)
 
-        return res
+        if res.status_code != 200:
+            raise Exception(
+                f"Failed to fetch data from ORATS: {res.status_code} {res.json().get('message')}"
+            )
+        else:
+            return res.json().get("data")
 
     @staticmethod
     def transform_data(
