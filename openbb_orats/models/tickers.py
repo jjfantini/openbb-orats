@@ -16,6 +16,7 @@ be entirely custom, or inherit from the OpenBB standardized models.
 This file shows an example of how to integrate data from a provider.
 """
 # pylint: disable=unused-argument
+import datetime as dt
 from typing import Any, Dict, List, Optional
 
 from openbb_core.provider.abstract.data import Data
@@ -49,8 +50,14 @@ class OratsTickersOptionsChainsData(Data):
     """
 
     ticker: str = Field(description="Ticker symbol.")
-    min: str = Field(description="Minimum date of data available in YYYY-MM-DD format.")
-    max: str = Field(description="Maximum date of data available in YYYY-MM-DD format.")
+    min: dt.date = Field(
+        default=dt.date(2007, 1, 3),
+        description="Minimum date of data available in YYYY-MM-DD format.",
+    )
+    max: dt.date = Field(
+        default=dt.date.today(),
+        description="Maximum date of data available in YYYY-MM-DD format.",
+    )
 
 
 class OratsTickersOptionsChainsFetcher(
