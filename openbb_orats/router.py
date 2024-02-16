@@ -47,5 +47,12 @@ async def tickers(
     standard_params: StandardParams,
     extra_params: ExtraParams,
 ) -> OBBject[BaseModel]:
-    """Retrieve Ticker Information from ORATS"""
+    """
+    Retrieve Ticker Information from ORATS
+
+    Notes
+    -----
+    If you want to pass multiple tickers, use:
+    obb.openbb_orats.tickers("AAPL,TSLA,AMZN")
+    """
     return await OBBject.from_query(Query(**locals()))

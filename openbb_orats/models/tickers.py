@@ -18,31 +18,39 @@ This file shows an example of how to integrate data from a provider.
 # pylint: disable=unused-argument
 from typing import Any, Dict, List, Optional
 
-import requests
 from openbb_core.provider.abstract.data import Data
 from openbb_core.provider.abstract.fetcher import Fetcher
 from openbb_core.provider.standard_models.options_chains import OptionsChainsQueryParams
+from openbb_core.provider.utils.errors import EmptyDataError
+from openbb_core.provider.utils.helpers import amake_requests
 from pydantic import Field
 
 
 class OratsTickersOptionsChainsQueryParams(OptionsChainsQueryParams):
-    """ORATS Tickers Query Parameters.
+    """
+    ORATS Tickers Query Parameters.
 
     The QueryParams used in the `/datav2/tickers` endpoint for ORATS.
-    We are only interested in the `ticker` QueryParam.
+    We are only interested in the `symbol` QueryParam.
+
+    Parameters
+    ----------
+    symbol : str
+        The ticker symbol for the option.
     """
 
 
 class OratsTickersOptionsChainsData(Data):
-    """Sample provider data.
+    """
+    ORATS Tickers Data.
 
     The fields are displayed as-is in the output of the command. In this case, its the
-    Open, High, Low, Close and Volume data.
+    ticker, min, and max.
     """
 
     ticker: str = Field(description="Ticker symbol.")
-    min: str = Field(description="Minimum date in YYYY-MM-DD format.")
-    max: str = Field(description="Maximum date in YYYY-MM-DD format.")
+    min: str = Field(description="Minimum date of data available in YYYY-MM-DD format.")
+    max: str = Field(description="Maximum date of data available in YYYY-MM-DD format.")
 
 
 class OratsTickersOptionsChainsFetcher(
@@ -51,9 +59,10 @@ class OratsTickersOptionsChainsFetcher(
         List[OratsTickersOptionsChainsData],
     ]
 ):
-    """Example Fetcher class.
+    """
+    Fetcher for the `/datav2/tickers` endpoint in ORATS.
 
-    This class is responsible for the actual data retrieval.
+    This class is responsible for the actual data retrieval from the API.
     """
 
     @staticmethod
@@ -66,7 +75,7 @@ class OratsTickersOptionsChainsFetcher(
         return OratsTickersOptionsChainsQueryParams(**params)
 
     @staticmethod
-    def extract_data(
+    async def aextract_data(
         query: OratsTickersOptionsChainsQueryParams,
         credentials: Optional[Dict[str, str]],
         **kwargs: Any,
@@ -76,22 +85,20 @@ class OratsTickersOptionsChainsFetcher(
         Here we make the actual request to the data provider and receive the raw data.
         If you said your Provider class needs credentials you can get them here.
         """
-        api_key = credentials.get("openbb_orats_api_key") if credentials else ""
+        api_key = credentials.get("orats_api_key") if credentials else ""
 
-        ORATS_BASE_URL: str = "https://api.orats.io/datav2/"
+        symbols = query.symbol.split(",")
 
-        urls: str = ORATS_BASE_URL
-        urls += "tickers"
-        urls += f"?token={api_key}&ticker={query.symbol}"
+        def _generate_urls(symbols: str, api_key: str) -> List[str]:
+            ORATS_BASE_URL: str = "https://api.orats.io/datav2/tickers"
+            return [
+                f"{ORATS_BASE_URL}?token={api_key}&ticker={symbol}"
+                for symbol in symbols
+            ]
 
-        res = requests.get(urls, timeout=10)
+        urls = _generate_urls(symbols, api_key)
 
-        if res.status_code != 200:
-            raise Exception(
-                f"Failed to fetch data from ORATS: {res.status_code} {res.json().get('message')}"
-            )
-        else:
-            return res.json().get("data")
+        return await amake_requests(urls, **kwargs)
 
     @staticmethod
     def transform_data(
@@ -102,4 +109,18 @@ class OratsTickersOptionsChainsFetcher(
         Right now, we're converting the data to fit our desired format.
         You can apply other transformations to it here.
         """
+        if not data:
+            raise EmptyDataError()
+
+        def _extract_data_from_list(
+            data: List[dict],
+        ) -> List[OratsTickersOptionsChainsData]:
+            all_data = []
+            for item in data:
+                data_list = item.get("data", [])
+                all_data.extend(data_list)
+            return all_data
+
+        data = _extract_data_from_list(data)
+
         return [OratsTickersOptionsChainsData(**d) for d in data]
