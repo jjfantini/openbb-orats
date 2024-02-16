@@ -168,3 +168,5 @@ cython_debug/
 
 # VS Code project settings
 .vscode/
+
+temp.ipynb
