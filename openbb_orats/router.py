@@ -53,6 +53,9 @@ async def tickers(
     Notes
     -----
     If you want to pass multiple tickers, use:
+
+    ```
     obb.openbb_orats.tickers("AAPL,TSLA,AMZN")
+    ```
     """
     return await OBBject.from_query(Query(**locals()))

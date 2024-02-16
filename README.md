@@ -1,23 +1,21 @@
-# OpenBB Platform v4 Cookiecutter Template
+# openbb-orats Package
 
 ## Introduction
 
-This is the generated cookiecutter template for the OpenBB Platform v4.
-It is used to help you create a new extension that can be integrated into the existing structure of the OpenBB Platform.
+The openbb-orats package is a specialized extension designed for the OpenBB Platform, focusing on integrating options data and analytics from ORATS (Options Research & Technology Services). This package serves as a bridge, allowing users to access and manipulate options data seamlessly within the OpenBB Platform environment.
 
-With it you can:
+Key features include:
 
-* Create a new extension
-* Build custom commands
-* Interact with the standardization framework
-* Build custom services and applications on top of the framework
+* Retrieving options data including pricing, Greeks, and implied volatility
+* Performing advanced options analytics
+* Accessing historical options data and trends
+* Customizable queries for specific data retrieval
 
 ## Getting Started
 
-We recommend you check out the files in the following order:
+To effectively utilize the openbb-orats package, familiarize yourself with its core components and functionalities:
 
-* `openbb_orats/README.md`
-* `openbb_orats/models/example.py`
-* `openbb_orats/provider.py`
-* `openbb_orats/__init__.py`
-* `openbb_orats/router.py`
+* `openbb_orats/router.py` - Defines the routes for data retrieval and analytics commands.
+* `openbb_orats/provider.py` - Manages data fetching from ORATS API.
+* `openbb_orats/models/` - Contains models for structuring the options data.
+* `openbb_orats/__init__.py` - Initializes the package, making it ready for use within the OpenBB Platform.
